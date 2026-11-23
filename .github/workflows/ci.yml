@@ -1,0 +1,30 @@
+name: CI
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: python scripts/prepare_dependencies.py
+      - run: bash gradlew build
+      - run: python scripts/verify_release.py build/libs/ecoessentia-0.2.0.jar
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ecoessentia
+          path: |
+            build/libs/ecoessentia-*.jar
+            !build/libs/*-mcp.jar
+          if-no-files-found: error

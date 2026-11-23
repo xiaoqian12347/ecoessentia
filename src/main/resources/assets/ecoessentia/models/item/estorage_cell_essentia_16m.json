@@ -1,0 +1,17 @@
+{
+  "parent": "ecoessentia:item/estorage_cell_essentia_16m_empty",
+  "overrides": [
+    {
+      "predicate": {
+        "ecoessentia:cell_status": 2
+      },
+      "model": "ecoessentia:item/estorage_cell_essentia_16m_mid"
+    },
+    {
+      "predicate": {
+        "ecoessentia:cell_status": 3
+      },
+      "model": "ecoessentia:item/estorage_cell_essentia_16m_full"
+    }
+  ]
+}

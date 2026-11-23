@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "ecoessentia:items/estorage_cell_essentia_16m_mid",
+    "layer1": "ecoessentia:items/bloom/estorage_cell_essentia_16m_mid"
+  }
+}

@@ -1,0 +1,81 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+import org.gradle.api.attributes.java.TargetJvmVersion
+
+plugins {
+    id 'java'
+    id 'com.cleanroommc.cleanroomgradle'
+}
+
+group = root_package
+version = '0.2.0'
+base.archivesName = mod_id
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(25)
+    withSourcesJar()
+}
+
+// Resolve the JDK 25 development environment while emitting Java 8 mod classes.
+configurations.matching { it.name in ['compileClasspath', 'runtimeClasspath', 'testCompileClasspath', 'testRuntimeClasspath'] }.configureEach {
+    attributes.attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 25)
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 8
+}
+
+repositories {
+    maven {
+        url = 'https://curse.cleanroommc.com'
+        content { includeGroup 'curse.maven' }
+    }
+    maven { url = 'https://maven.cleanroommc.com' }
+}
+
+dependencies {
+    implementation cleanroom.userdev(cleanroom_version)
+    implementation deobf('curse.maven:ae2extendedlife-570458:6302098')
+    implementation deobf('curse.maven:thaumic-energistics-extended-life-849094:6321322')
+    implementation deobf('curse.maven:thaumcraft-223628:2629023')
+    implementation deobf('curse.maven:baubles-227083:2518667')
+    implementation deobf(files('libs/ecoaeextension-1.2.0.jar'))
+    compileOnly deobf('curse.maven:mmce-817377:6945422')
+    compileOnly deobf('curse.maven:theoneprobe-245211:2667280')
+    compileOnly 'zone.rong:mixinbooter:10.5'
+    testImplementation 'junit:junit:4.13.2'
+}
+
+def metadataTokens = [
+    MOD_ID: mod_id, MOD_NAME: mod_name, MOD_VERSION: project.version.toString(),
+    MOD_DESCRIPTION: mod_description, MOD_AUTHORS: mod_authors,
+    MOD_CREDITS: '', MOD_URL: '', MOD_UPDATE_JSON: '', MOD_LOGO_PATH: ''
+]
+
+processResources {
+    inputs.properties(metadataTokens)
+    filteringCharset = 'UTF-8'
+    filesMatching(['mcmod.info', 'pack.mcmeta']) {
+        filter(ReplaceTokens, beginToken: '@{', endToken: '}', tokens: metadataTokens)
+    }
+}
+
+jar {
+    from('LICENSE') { into 'META-INF' }
+    from('NOTICE.md') { into 'META-INF' }
+}
+
+tasks.named('sourcesJar', Jar) {
+    from('LICENSE') { into 'META-INF' }
+    from('NOTICE.md') { into 'META-INF' }
+}
+
+test {
+    useJUnit()
+}
+
+cleanroom {
+    runs {
+        client { configure { username = minecraft_username } }
+    }
+}

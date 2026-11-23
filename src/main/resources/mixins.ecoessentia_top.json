@@ -1,0 +1,9 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.xiaoqian.ecoessentia.mixin",
+  "refmap": "mixins.ecoessentia.refmap.json",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": ["ProbeInfoMixin"],
+  "injectors": {"defaultRequire": 1}
+}
